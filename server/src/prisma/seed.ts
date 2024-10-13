@@ -13,7 +13,7 @@ async function seed() {
     });
     
     if (!existingAdmin) {
-        const adminEmail = "admin@example.com";
+        const adminEmail = "admin@admin.com";
         const hashedPassword = await hashPassword(process.env.ADMIN_PASSWORD || "defaultAdminPassword");
 
         await prisma.user.create({
