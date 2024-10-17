@@ -1,19 +1,17 @@
 import express from "express";
 
-import { UserRole } from "../types/roles";
-import { checkRole } from "../middlewares/auth/checkRole";
-import { authenticate } from "../middlewares/auth/authenticate";
-import { handleValidationErrors } from "../middlewares/validation/validationBase";
+import { UserRole } from "types/roles";
+import { checkRole } from "middlewares/auth/checkRole";
+import { authenticate } from "middlewares/auth/authenticate";
+import { handleValidationErrors } from "middlewares/validation/validationBase";
 import {
     loginValidation,
     doctorRegistrationValidation,
     patientRegistrationValidation,
 } from "../middlewares/validation/auth";
-import {
-    login,
-    logout,
-    registration,
-} from "../controllers/auth";
+import { registerDoctor, registerPatient } from "controllers/auth/registration"
+import { login } from "controllers/auth/login"
+import { logout } from "controllers/auth/logout"
 
 const router = express.Router();
 
@@ -25,7 +23,7 @@ router.post(
     checkRole(UserRole.ADMIN),
     doctorRegistrationValidation,
     handleValidationErrors,
-    registration
+    registerDoctor
 );
 router.post(
     "/register/patient",
@@ -33,7 +31,7 @@ router.post(
     checkRole(UserRole.DOCTOR),
     patientRegistrationValidation,
     handleValidationErrors,
-    registration
+    registerPatient
 );
 
 export default router;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { UserRole } from '../../types/roles';
+import { UserRole } from 'types/roles';
 
 export const checkRole = (requiredRole: UserRole) => {
     return (req: Request, res: Response, next: NextFunction) => {
