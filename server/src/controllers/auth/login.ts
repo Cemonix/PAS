@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import prisma from "../../prisma/client";
+import prisma from "prisma/client";
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -34,6 +34,6 @@ export const login = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: "Login error" });
     }
 };
