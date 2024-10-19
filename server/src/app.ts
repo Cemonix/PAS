@@ -1,9 +1,14 @@
 import express from "express";
-import authRoutes from "routes/auth";
+import cors from "cors"
+
+import authRoutes from "./routes/auth";
 
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:5173', // Only allow requests from this origin
+}));
 
 app.use("/auth", authRoutes);
 
