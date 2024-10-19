@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import prisma from "prisma/client";
+import prisma from "../../prisma/client";
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -27,7 +27,6 @@ export const login = async (req: Request, res: Response) => {
         return res.status(200).json({
             token,
             user: {
-                guid: user.guid,
                 email: user.email,
                 role: user.role,
             },
