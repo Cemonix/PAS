@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-import prisma from "prisma/client";
-import { hashPassword } from "utils/passwordUtils";
-import { UserRole } from "types/roles";
+import prisma from "../../prisma/client";
+import { hashPassword } from "../../utils/passwordUtils";
+import { UserRole } from "../../types/roles";
 
 export const registerDoctor = async (req: Request, res: Response) => {
     const {
