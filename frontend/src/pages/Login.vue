@@ -2,6 +2,7 @@
     <div class="login-page">
         <div class="wrapper">
             <h1>Login</h1>
+            <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
             <form @submit.prevent="handleLogin">
                 <div class="input-box">
                     <input type="text" v-model="email" placeholder="Email" required />
@@ -18,13 +19,22 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, ref } from "vue";
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { AxiosError } from "axios";
+
 import apiClient from '../services/api';
 
 export default defineComponent({
     name: "LoginPage",
     setup() {
+        const router = useRouter();
+        const store = useStore();
+
+        const errorMessage = ref("");
+
         const email = ref("");
         const password = ref("");
 
@@ -36,17 +46,23 @@ export default defineComponent({
                 });
 
                 if (response.status === 200) {
-                    console.log('Login successful:', response.data);
+                    const { token, user } = response.data;
+
+                    store.dispatch('login', { token, user });
+
+                    router.push('/home');
                 } else {
                     console.log('Login failed: ' + response.data.message);
                 }
-            } catch (error) {
+            } catch (err) {
+                errorMessage.value = "Login failed.";
+
+                const error = err as AxiosError
                 if (error.response) {
-                    console.error("Error response from server:", error.response.data);
-                    alert("Login failed: " + error.response.data.message);
+
+                    console.error("Error response from server:", error.response?.data);
                 } else {
                     console.error("Error during login:", error);
-                    alert("An error occurred. Please try again later.");
                 }
             }
         };
@@ -115,6 +131,11 @@ export default defineComponent({
     transform: translateY(-50%);
     color: white;
     font-size: 1.5rem;
+}
+
+.error-message {
+    text-align: center;
+    color: rgba(205, 1, 1, 0.829);
 }
 
 .wrapper .btn {
