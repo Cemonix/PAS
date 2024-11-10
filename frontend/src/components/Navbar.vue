@@ -5,9 +5,7 @@
                 <router-link to="/login" class="navbar-link">Login</router-link>
             </li>
             <li v-if="isAdmin">
-                <router-link to="/register-doctor" class="navbar-link"
-                    >Register Doctor</router-link
-                >
+                <router-link to="/register-doctor" class="navbar-link">Register Doctor</router-link>
             </li>
         </ul>
     </nav>

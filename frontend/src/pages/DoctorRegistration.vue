@@ -63,7 +63,7 @@ export default defineComponent({
                 const response = await apiClient.post('/auth/register/doctor', formData.value);
 
                 if (response.status === 200) {
-                    router.push('/home');
+                    await router.push('/home');
                 } else {
                     console.log('Registration failed: ' + response.data.message);
                 }
