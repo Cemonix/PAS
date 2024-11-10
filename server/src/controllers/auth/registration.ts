@@ -4,23 +4,19 @@ import jwt from "jsonwebtoken";
 import prisma from "../../prisma/client";
 import { hashPassword } from "../../utils/passwordUtils";
 import { UserRole } from "../../types/roles";
+import { PrismaClient } from "@prisma/client";
 
 export const registerDoctor = async (req: Request, res: Response) => {
     const {
-        email,
-        password,
-        firstName,
-        lastName,
-        contactEmail,
-        location,
-        phoneNumber,
-        specializationName,
+        email, password, firstName,
+        lastName, contactEmail, location,
+        phoneNumber, specializationName,
     } = req.body;
 
     try {
         const passwordHash = await hashPassword(password);
 
-        const result = await prisma.$transaction(async (prisma) => {
+        const result = await prisma.$transaction(async (prisma: PrismaClient) => {
             const specialization = await prisma.specialization.findUnique({
                 where: { name: specializationName },
             });
