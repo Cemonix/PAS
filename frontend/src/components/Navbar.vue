@@ -1,34 +1,35 @@
 <template>
     <nav class="navbar">
         <ul class="navbar-list">
-            <li>
+            <li v-if="!isAuthenticated">
                 <router-link to="/login" class="navbar-link">Login</router-link>
             </li>
             <li v-if="isAdmin">
                 <router-link to="/register-doctor" class="navbar-link">Register Doctor</router-link>
             </li>
+            <li v-if="isAuthenticated">
+                <a href="#" @click.prevent="handleLogout" class="navbar-link">Logout</a>
+            </li>
         </ul>
     </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { computed } from 'vue';
 import { useStore } from 'vuex';
 
 import { key } from '../store';
+import router from "../router";
 
-export default defineComponent({
-    name: "Navbar",
-    setup() {
-        const store = useStore(key);
+const store = useStore(key);
 
-        const isAdmin = store.getters.isAdmin;
+const isAuthenticated = computed(() => store.state.auth.isAuthenticated);
+const isAdmin = computed(() => store.getters.isAdmin);
 
-        return {
-            isAdmin,
-        };
-    },
-});
+const handleLogout = async () => {
+    await store.dispatch('logout');
+    await router.push('/home');
+};
 </script>
 
 <style scoped>
