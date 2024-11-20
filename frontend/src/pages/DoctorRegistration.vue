@@ -28,66 +28,81 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup lang="ts">
+import { ref } from "vue";
 import { useRouter } from 'vue-router';
 import { AxiosError } from "axios";
-
+import { useStore } from 'vuex';
+import { key } from '../store';
 import apiClient from '../services/api';
 
-export default defineComponent({
-    name: "DoctorRegistrationPage",
-    setup() {
-        const router = useRouter();
-        
-        const errorMessage = ref("");
+const router = useRouter();
+const store = useStore(key);
 
-        const formData = ref({
-            email: '',
-            password: '',
-            firstName: '',
-            lastName: '',
-            contactEmail: '',
-            location: '',
-            phoneNumber: '',
-            specialization: ''
-        });
+const checkAuthorization = () => {
+    const isAdmin = store.getters.isAdmin;
+    const token = store.state.auth.token;
 
-        const showPassword = ref(false);
-        const togglePasswordVisibility = () => {
-            showPassword.value = !showPassword.value;
-        };
+    if (!isAdmin || !token) {
+        router.push('/login');
+        return false;
+    }
+    return true;
+};
 
-        const handleRegistration = async () => {
-            try {
-                const response = await apiClient.post('/auth/register/doctor', formData.value);
+if (!checkAuthorization()) {}
 
-                if (response.status === 200) {
-                    await router.push('/home');
-                } else {
-                    console.log('Registration failed: ' + response.data.message);
-                }
-            } catch (err) {
-                errorMessage.value = "Registration failed.";
-                
-                const error = err as AxiosError
-                if (error.response) {
-                    console.error("Error response from server: ", error.response.data);
-                } else {
-                    console.error("Error during registration: ", error);
-                }
-            }
-        };
+const errorMessage = ref("");
 
-        return {
-            formData,
-            errorMessage,
-            showPassword,
-            togglePasswordVisibility,
-            handleRegistration,
-        };
-    },
+const formData = ref({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    contactEmail: '',
+    location: '',
+    phoneNumber: '',
+    specialization: ''
 });
+
+const showPassword = ref(false);
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+};
+
+const handleRegistration = async () => {
+    try {
+        const response = await apiClient.post('/auth/register/doctor', formData.value);
+
+        if (response.status === 200) {
+            console.log("Registration successful");
+        } else {
+            console.log('Registration failed: ' + response.data.message);
+        }
+    } catch (err) {
+        const error = err as AxiosError;
+
+        if (error.response?.status === 401) {
+            errorMessage.value = "Unauthorized access. Please login again.";
+            await store.dispatch('logout');
+            await router.push('/login');
+            return;
+        }
+
+        if (error.response?.status === 403) {
+            errorMessage.value = "You don't have permission to register doctors.";
+            return;
+        }
+
+        errorMessage.value = "Registration failed.";
+
+        if (error.response) {
+            console.error("Error response from server: ", error.response.data);
+        } else {
+            console.error("Error during registration: ", error);
+        }
+    }
+};
 </script>
 
 <style scoped>
