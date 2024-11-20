@@ -5,15 +5,21 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
+<script setup lang="ts">
 import Navbar from "./components/Navbar.vue";
+import {store} from "./store";
 
-export default defineComponent({
-    name: "App",
-    components: {
-        Navbar,
-    },
-});
+const initializeAuth = () => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+
+    if (token && user) {
+        store.dispatch('login', {
+            token,
+            user: JSON.parse(user)
+        });
+    }
+}
+
+initializeAuth();
 </script>
