@@ -1,52 +1,12 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-import prisma from "../../prisma/client";
-import { hashPassword } from "../../utils/passwordUtils";
-import { UserRole } from "../../types/roles";
-import { PrismaClient } from "@prisma/client";
+import {DoctorService} from "../../services/doctorService";
 
 export const registerDoctor = async (req: Request, res: Response) => {
-    const {
-        email, password, firstName,
-        lastName, contactEmail, location,
-        phoneNumber, specializationName,
-    } = req.body;
+    const doctorService = new DoctorService();
 
     try {
-        const passwordHash = await hashPassword(password);
-
-        const result = await prisma.$transaction(async (prisma: PrismaClient) => {
-            const specialization = await prisma.specialization.findUnique({
-                where: { name: specializationName },
-            });
-
-            if (!specialization) {
-                throw new Error("Specialization doesn't exist");
-            }
-
-            const user = await prisma.user.create({
-                data: {
-                    email: email,
-                    passwordHash: passwordHash,
-                    role: UserRole.DOCTOR,
-                },
-            });
-
-            const doctor = await prisma.doctor.create({
-                data: {
-                    firstName: firstName,
-                    lastName: lastName,
-                    contactEmail: contactEmail,
-                    location: location,
-                    phoneNumber: phoneNumber,
-                    userGuid: user.guid,
-                    specializationGuid: specialization.guid,
-                },
-            });
-
-            return { user, doctor, specialization };
-        });
+        const result = await doctorService.registerDoctor(req.body);
 
         const token = jwt.sign(
             {
@@ -58,7 +18,7 @@ export const registerDoctor = async (req: Request, res: Response) => {
             { expiresIn: "1h" }
         );
 
-        return res.status(200).json({
+        return res.status(201).json({
             token,
             doctor: {
                 firstName: result.doctor.firstName,
@@ -70,8 +30,20 @@ export const registerDoctor = async (req: Request, res: Response) => {
             },
         });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Registration error" });
+        if (error instanceof Error) {
+            switch (error.message) {
+                case "User already exists":
+                    return res.status(409).json({ message: error.message });
+                case "Specialization doesn't exist":
+                    return res.status(400).json({ message: error.message });
+                default:
+                    console.error("Registration error:", error);
+                    return res.status(500).json({ message: "Internal server error" });
+            }
+        }
+
+        console.error("Unexpected error during registration:", error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
 
