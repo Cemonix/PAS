@@ -1,23 +1,14 @@
 import {hashPassword} from "../utils/passwordUtils";
 import prisma from "../prisma/client";
-import {UserRole} from "../types/roles";
-
-interface DoctorRegistrationData {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    contactEmail: string;
-    location: string;
-    phoneNumber: string;
-    specializationName: string;
-}
+import {UserRole} from "../types/enums/roles";
+import {RegisterDoctorRequestDto, RegisterDoctorResponseDto} from "../types/dtos/auth/RegisterDto";
+import jwt from "jsonwebtoken";
 
 export class DoctorService {
-    async registerDoctor(data: DoctorRegistrationData) {
+    async registerDoctor(data: RegisterDoctorRequestDto): Promise<RegisterDoctorResponseDto> {
         const passwordHash = await hashPassword(data.password);
 
-        return prisma.$transaction(async (tx) => {
+        const { user, doctor, specialization } = await prisma.$transaction(async (tx) => {
             const existingUser = await tx.user.findUnique({
                 where: { email: data.email }
             });
@@ -26,13 +17,11 @@ export class DoctorService {
                 throw new Error("User already exists");
             }
 
-            const specialization = await tx.specialization.findUnique({
-                where: { name: data.specializationName },
+            const specialization = await tx.specialization.upsert({
+                where: { name: data.specialization },
+                update: {},
+                create: { name: data.specialization }
             });
-
-            if (!specialization) {
-                throw new Error("Specialization doesn't exist");
-            }
 
             const user = await tx.user.create({
                 data: {
@@ -63,5 +52,27 @@ export class DoctorService {
             maxWait: 5000,
             timeout: 10000
         });
+
+        const token = jwt.sign(
+            {
+                guid: user.guid,
+                email: user.email,
+                role: user.role,
+            },
+            process.env.JWT_SECRET!,
+            { expiresIn: "1h" }
+        );
+
+        return {
+            token,
+            doctor: {
+                firstName: doctor.firstName,
+                lastName: doctor.lastName,
+                contactEmail: doctor.contactEmail,
+                location: doctor.location,
+                phoneNumber: doctor.phoneNumber,
+                specialization: specialization.name,
+            }
+        };
     }
 }
