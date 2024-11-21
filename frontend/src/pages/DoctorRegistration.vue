@@ -2,6 +2,7 @@
     <div class="doctor-registration-page">
         <div class="wrapper">
             <h1>Doctor registration</h1>
+            <div class="success-message" v-if="successMessage">{{ successMessage }}</div>
             <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
             <form @submit.prevent="handleRegistration">
                 <div class="input-box">
@@ -39,19 +40,7 @@ import apiClient from '../services/api';
 const router = useRouter();
 const store = useStore(key);
 
-const checkAuthorization = () => {
-    const isAdmin = store.getters.isAdmin;
-    const token = store.state.auth.token;
-
-    if (!isAdmin || !token) {
-        router.push('/login');
-        return false;
-    }
-    return true;
-};
-
-if (!checkAuthorization()) {}
-
+const successMessage = ref("");
 const errorMessage = ref("");
 
 const formData = ref({
@@ -74,8 +63,18 @@ const handleRegistration = async () => {
     try {
         const response = await apiClient.post('/auth/register/doctor', formData.value);
 
-        if (response.status === 200) {
-            console.log("Registration successful");
+        if (response.status === 201) {
+            successMessage.value = "Doctor registered successfully";
+            formData.value = {
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                contactEmail: '',
+                location: '',
+                phoneNumber: '',
+                specialization: ''
+            };
         } else {
             console.log('Registration failed: ' + response.data.message);
         }
@@ -171,9 +170,16 @@ const handleRegistration = async () => {
     cursor: pointer;
 }
 
+.success-message {
+    text-align: center;
+    color: #4BB543;
+    margin: 10px 0;
+}
+
 .error-message {
     text-align: center;
     color: rgba(205, 1, 1, 0.829);
+    margin: 10px 0;
 }
 
 .wrapper .btn {
