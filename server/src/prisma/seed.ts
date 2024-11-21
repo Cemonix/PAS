@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import crypto from 'crypto';
 
 import prisma from './client'
-import { UserRole } from '../types/roles';
+import { UserRole } from '../types/enums/roles';
 import { hashPassword } from '../utils/passwordUtils';
 
 dotenv.config();

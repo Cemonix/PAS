@@ -1,4 +1,4 @@
-import { UserRole } from "./roles";
+import { UserRole } from "./enums/roles";
 
 declare global {
     namespace Express {

@@ -1,6 +1,6 @@
 import express from "express";
 
-import { UserRole } from "../types/roles";
+import { UserRole } from "../types/enums/roles";
 import { checkRole } from "../middlewares/auth/checkRole";
 import { authenticate } from "../middlewares/auth/authenticate";
 import { handleValidationErrors } from "../middlewares/validation/validationBase";
