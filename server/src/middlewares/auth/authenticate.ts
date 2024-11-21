@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-import { UserRole } from "../../types/roles";
+import { UserRole } from "../../types/enums/roles";
 
 export const authenticate = (
     req: Request,
@@ -17,20 +17,19 @@ export const authenticate = (
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        req.user = jwt.verify(token, process.env.JWT_SECRET!) as {
             guid: string;
             email: string;
             role: UserRole;
         };
-
-        req.user = {
-            guid: decoded.guid,
-            email: decoded.email,
-            role: decoded.role,
-        };
-
         next();
     } catch (error) {
-        return res.status(403).json({ message: "Forbidden: Invalid token" });
+        if (error instanceof jwt.TokenExpiredError) {
+            return res.status(401).json({
+                message: 'Token expired',
+                code: 'TOKEN_EXPIRED'
+            });
+        }
+        return res.status(401).json({ message: 'Invalid token' });
     }
 };
