@@ -1,81 +1,80 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 enum Role {
-  PATIENT
-  DOCTOR
-  ADMIN
+    PATIENT
+    DOCTOR
+    ADMIN
 }
 
 model User {
-  guid                String   @id @default(uuid())
-  email               String   @unique
-  passwordHash        String
-  role                Role
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  lastLoginAt         DateTime?
-  failedLoginAttempts Int      @default(0)
+    guid                String    @id @default(uuid())
+    email               String    @unique
+    passwordHash        String
+    role                Role
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime  @updatedAt
+    lastLoginAt         DateTime?
+    failedLoginAttempts Int       @default(0)
 
-  // Relations
-  patient Patient?
-  doctor  Doctor?
+    // Relations
+    patient Patient?
+    doctor  Doctor?
 }
 
 model Doctor {
-  guid         String @id @default(uuid())
-  firstName    String
-  lastName     String
-  contactEmail String @unique
-  location     String
-  phoneNumber  String
+    guid         String @id @default(uuid())
+    firstName    String
+    lastName     String
+    contactEmail String @unique
+    location     String
+    phoneNumber  String
 
-  // Foreign Key to Specialization
-  specializationGuid String
-  specialization     Specialization @relation(fields: [specializationGuid], references: [guid])
+    // Foreign Key to Specialization
+    specializationGuid String
+    specialization     Specialization @relation(fields: [specializationGuid], references: [guid])
 
-  // Relation to User
-  userGuid         String @unique
-  user             User   @relation(fields: [userGuid], references: [guid])
+    // Relation to User
+    userGuid String @unique
+    user     User   @relation(fields: [userGuid], references: [guid])
 }
 
 model Patient {
-  guid        String   @id @default(uuid())
-  firstName   String
-  lastName    String
-  phoneNumber String
-  birthdate   DateTime
+    guid        String   @id @default(uuid())
+    firstName   String
+    lastName    String
+    phoneNumber String
+    birthdate   DateTime
 
-  // Foreign Key to Address
-  addressGuid String
-  address     Address   @relation(fields: [addressGuid], references: [guid])
+    // Foreign Key to Address
+    addressGuid String
+    address     Address @relation(fields: [addressGuid], references: [guid])
 
-  // Relation to User
-  userGuid String    @unique
-  user     User      @relation(fields: [userGuid], references: [guid])
+    // Relation to User
+    userGuid String @unique
+    user     User   @relation(fields: [userGuid], references: [guid])
 }
 
 model Address {
-  guid       String   @id @default(uuid())
-  street     String
-  city       String
-  postalCode String
+    guid       String @id @default(uuid())
+    street     String
+    city       String
+    postalCode String
 
-  // Relations
-  patients Patient[]
+    // Relations
+    patients Patient[]
 }
 
 model Specialization {
-  guid        String   @id @default(uuid())
-  name        String   @unique
-  description String?
+    guid String @id @default(uuid())
+    name String @unique
 
-  // Relations
-  doctors Doctor[]
+    // Relations
+    doctors Doctor[]
 }
