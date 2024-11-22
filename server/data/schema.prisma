@@ -50,25 +50,14 @@ model Patient {
     firstName   String
     lastName    String
     phoneNumber String
-    birthdate   DateTime
-
-    // Foreign Key to Address
-    addressGuid String
-    address     Address @relation(fields: [addressGuid], references: [guid])
+    dateOfBirth DateTime
+    street      String
+    city        String
+    postalCode  String
 
     // Relation to User
     userGuid String @unique
     user     User   @relation(fields: [userGuid], references: [guid])
-}
-
-model Address {
-    guid       String @id @default(uuid())
-    street     String
-    city       String
-    postalCode String
-
-    // Relations
-    patients Patient[]
 }
 
 model Specialization {
