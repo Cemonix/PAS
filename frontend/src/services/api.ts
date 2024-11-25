@@ -21,10 +21,11 @@ apiClient.interceptors.request.use(
     }
 );
 
+// TODO: User should know that he was logout due to token expiration
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
+        if (store.state.auth.isAuthenticated && error.response?.status === 401) {
             await store.dispatch('logout');
             window.location.href = '/login';
         }
