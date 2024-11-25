@@ -47,7 +47,7 @@ const handleLogin = async () => {
             await store.dispatch('login', { token, user });
             await router.push('/home');
         } else {
-            console.log('Login failed: ' + response.data.message);
+            errorMessage.value = 'Login failed: ' + response.data.message;
         }
     } catch (err) {
         errorMessage.value = "Login failed.";
