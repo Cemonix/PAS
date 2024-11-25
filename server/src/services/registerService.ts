@@ -96,7 +96,7 @@ export const registerPatientService = async (data: RegisterPatientRequestDto): P
             data: {
                 email: data.email,
                 passwordHash,
-                role: UserRole.DOCTOR,
+                role: UserRole.PATIENT,
             }
         });
 
