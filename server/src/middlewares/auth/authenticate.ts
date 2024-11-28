@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-import { UserRole } from "../../types/enums/roles";
+import {JwtPayload} from "../../types/auth";
+
 
 export const authenticate = (
     req: Request,
@@ -17,11 +18,7 @@ export const authenticate = (
     }
 
     try {
-        req.user = jwt.verify(token, process.env.JWT_SECRET!) as {
-            guid: string;
-            email: string;
-            role: UserRole;
-        };
+        req.user = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
         next();
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
