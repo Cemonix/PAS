@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors"
 
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/user";
 
 const app = express();
 
@@ -11,11 +12,10 @@ app.use(cors({
 }));
 
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-// TODO: User registration
