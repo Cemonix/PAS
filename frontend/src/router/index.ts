@@ -4,6 +4,9 @@ import HomePage from '../pages/Home.vue';
 import LoginPage from '../pages/Login.vue';
 import DoctorRegistrationPage from '../pages/DoctorRegistration.vue';
 import PatientRegistrationPage from '../pages/PatientRegistration.vue';
+import ChangePasswordPage from "../pages/user/ChangePassword.vue";
+import DeleteAccountPage from "../pages/user/DeleteAccount.vue";
+import EditProfilePage from "../pages/user/EditProfile.vue";
 
 const routes = [
     { path: '/', redirect: '/home' },
@@ -25,6 +28,25 @@ const routes = [
             requiresDoctor: true
         }
     },
+    {
+        path: '/profile',
+        meta: { requiresAuth: true },
+        children: [
+            {
+                path: 'edit-profile',
+                component: EditProfilePage,
+            },
+            {
+                path: 'change-password',
+                component: ChangePasswordPage,
+            },
+            {
+                path: 'delete-account',
+                component: DeleteAccountPage,
+            }
+        ]
+    }
+
 ];
 
 const router = createRouter({
