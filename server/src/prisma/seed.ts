@@ -2,14 +2,14 @@ import dotenv from 'dotenv';
 import crypto from 'crypto';
 
 import prisma from './client'
-import { UserRole } from '../types/enums/roles';
 import { hashPassword } from '../utils/passwordUtils';
+import {Role} from "@prisma/client";
 
 dotenv.config();
 
 async function seed() {
     const existingAdmin = await prisma.user.findFirst({
-        where: { role: UserRole.ADMIN }
+        where: { role: Role.ADMIN }
     });
     
     if (!existingAdmin) {
@@ -21,7 +21,7 @@ async function seed() {
                 guid: crypto.randomUUID(),
                 email: adminEmail,
                 passwordHash: hashedPassword,
-                role: UserRole.ADMIN,
+                role: Role.ADMIN,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 failedLoginAttempts: 0,
