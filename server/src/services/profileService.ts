@@ -1,10 +1,10 @@
 import prisma from "../prisma/client";
 import { Role } from "@prisma/client";
 import {comparePasswords, hashPassword} from "../utils/passwordUtils";
-import { DoctorProfileDto, PatientProfileDto } from "../types/dtos/user/ProfileDto";
-import { UpdatePasswordDto } from "../types/dtos/user/UpdatePasswordDto";
+import { DoctorProfileDto, PatientProfileDto, BaseProfileDto } from "../types/dtos/profile/ProfileDto";
+import { UpdatePasswordDto } from "../types/dtos/profile/UpdatePasswordDto";
 
-export const getUserProfileService = async (userGuid: string): Promise<DoctorProfileDto | PatientProfileDto> => {
+export const getUserProfileService = async (userGuid: string): Promise<DoctorProfileDto | PatientProfileDto | BaseProfileDto> => {
     const user = await prisma.user.findUnique({
         where: { guid: userGuid },
         include: {
@@ -44,9 +44,14 @@ export const getUserProfileService = async (userGuid: string): Promise<DoctorPro
             city: user.patient.city,
             postalCode: user.patient.postalCode
         };
+    } else if (user.role === Role.ADMIN) {
+        return {
+            email: user.email,
+            role: user.role
+        }
     }
 
-    throw new Error("Invalid user role or missing profile data");
+    throw new Error("Invalid profile role or missing profile data");
 };
 
 export const updatePasswordService = async (userGuid: string, data: UpdatePasswordDto) => {
@@ -62,10 +67,6 @@ export const updatePasswordService = async (userGuid: string, data: UpdatePasswo
     const isPasswordValid = await comparePasswords(data.currentPassword, user.passwordHash);
     if (!isPasswordValid) {
         throw new Error("Current password is incorrect");
-    }
-
-    if (data.newPassword !== data.confirmPassword) {
-        throw new Error("New password and confirmation do not match");
     }
 
     const newPasswordHash = await hashPassword(data.newPassword);

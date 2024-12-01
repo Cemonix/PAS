@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 
-interface BaseProfileDto {
+export interface BaseProfileDto {
     email: string;
     role: Role;
 }

@@ -10,7 +10,7 @@ import {
 } from "../middlewares/validation/auth";
 import { registerDoctor, registerPatient } from "../controllers/auth/registration"
 import { login } from "../controllers/auth/login"
-import {Role} from "@prisma/client";
+import { Role } from "@prisma/client";
 
 const router = express.Router();
 
