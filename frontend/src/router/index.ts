@@ -1,12 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { store } from '../store'
 import HomePage from '../pages/Home.vue';
-import LoginPage from '../pages/Login.vue';
-import DoctorRegistrationPage from '../pages/DoctorRegistration.vue';
-import PatientRegistrationPage from '../pages/PatientRegistration.vue';
-import ChangePasswordPage from "../pages/user/ChangePassword.vue";
-import DeleteAccountPage from "../pages/user/DeleteAccount.vue";
-import EditProfilePage from "../pages/user/EditProfile.vue";
+import LoginPage from '../pages/auth/Login.vue';
+import DoctorRegistrationPage from '../pages/auth/DoctorRegistration.vue';
+import PatientRegistrationPage from '../pages/auth/PatientRegistration.vue';
+import Profile from "../pages/Profile.vue";
 
 const routes = [
     { path: '/', redirect: '/home' },
@@ -30,21 +28,15 @@ const routes = [
     },
     {
         path: '/profile',
-        meta: { requiresAuth: true },
+        name: 'Profile',
+        component: Profile,
         children: [
             {
-                path: 'edit-profile',
-                component: EditProfilePage,
-            },
-            {
-                path: 'change-password',
-                component: ChangePasswordPage,
-            },
-            {
-                path: 'delete-account',
-                component: DeleteAccountPage,
+                path: ':panel?',
+                component: Profile,
             }
-        ]
+        ],
+        meta: { requiresAuth: true },
     }
 
 ];

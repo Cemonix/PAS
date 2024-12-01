@@ -6,7 +6,7 @@
                 <router-link to="/login" class="navbar-link">Login</router-link>
             </li>
             <li v-if="isAuthenticated">
-                <router-link to="/profile/edit-profile" class="navbar-link">Profile</router-link>
+                <router-link to="/profile" class="navbar-link">Profile</router-link>
             </li>
             <li v-if="(isAdmin || isDoctor) && isAuthenticated">
                 <router-link to="/register-patient" class="navbar-link">Register Patient</router-link>
