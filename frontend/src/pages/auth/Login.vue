@@ -20,46 +20,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex'
-import { key } from '../store'
-import { AxiosError } from "axios";
+    import { ref } from 'vue';
+    import { useRouter } from 'vue-router';
+    import { useStore } from 'vuex'
+    import { key } from '../../store'
+    import { AxiosError } from "axios";
 
-import apiClient from '../services/api';
+    import apiClient from '../../services/api.ts';
 
-const router = useRouter();
-const store = useStore(key);
+    const router = useRouter();
+    const store = useStore(key);
 
-const errorMessage = ref("");
-const email = ref("");
-const password = ref("");
+    const errorMessage = ref("");
+    const email = ref("");
+    const password = ref("");
 
-const handleLogin = async () => {
-    try {
-        const response = await apiClient.post('/auth/login', {
-            email: email.value,
-            password: password.value,
-        });
+    const handleLogin = async () => {
+        try {
+            const response = await apiClient.post('/auth/login', {
+                email: email.value,
+                password: password.value,
+            });
 
-        if (response.status === 200) {
-            const { token, user } = response.data;
-            await store.dispatch('login', { token, user });
-            await router.push('/home');
-        } else {
-            errorMessage.value = 'Login failed: ' + response.data.message;
+            if (response.status === 200) {
+                const { token, user } = response.data;
+                await store.dispatch('login', { token, user });
+                await router.push('/home');
+            } else {
+                errorMessage.value = 'Login failed: ' + response.data.message;
+            }
+        } catch (err) {
+            errorMessage.value = "Login failed.";
+
+            const error = err as AxiosError
+            if (error.response) {
+                console.error("Error response from server:", error.response?.data);
+            } else {
+                console.error("Error during login:", error);
+            }
         }
-    } catch (err) {
-        errorMessage.value = "Login failed.";
-
-        const error = err as AxiosError
-        if (error.response) {
-            console.error("Error response from server:", error.response?.data);
-        } else {
-            console.error("Error during login:", error);
-        }
-    }
-};
+    };
 </script>
 
 <style scoped>
