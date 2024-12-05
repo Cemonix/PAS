@@ -3,6 +3,8 @@ import cors from "cors"
 
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/profile";
+import doctorRoutes from "./routes/doctor";
+import appointmentRoutes from "./routes/appointment";
 
 const app = express();
 
@@ -13,6 +15,8 @@ app.use(cors({
 
 app.use("/auth", authRoutes);
 app.use("/profile", userRoutes);
+app.use('/doctors', doctorRoutes);
+app.use('/appointments', appointmentRoutes);
 
 const PORT = process.env.PORT || 3000;
 
