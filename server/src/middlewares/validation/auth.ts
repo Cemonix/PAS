@@ -30,7 +30,15 @@ export const patientRegistrationValidation = [
         .matches(/[0-9]/).withMessage("Password must contain at least one number"),
     body("firstName").notEmpty().withMessage("First name is required"),
     body("lastName").notEmpty().withMessage("Last name is required"),
-    body("dateOfBirth").isDate().withMessage("Valid date of birth is required"),
+    body("dateOfBirth").custom(
+        (value) => {
+            try {
+                new Date(value).toISOString();
+                return true;
+            } catch {
+                throw new Error("Invalid date format. Use YYYY-MM-DD");
+            }
+    }),
     body("phoneNumber")
         .isMobilePhone('cs-CZ')
         .withMessage("Valid phone number is required"),
