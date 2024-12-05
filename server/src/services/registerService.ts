@@ -8,23 +8,13 @@ import {
     RegisterPatientResponseDto
 } from "../types/dtos/auth/RegisterDto";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const isEmailUnique = async(email: string) => {
     const existingUser = await prisma.user.findUnique({
         where: { email }
     });
     return !existingUser;
-}
-
-const createUserAccount = async(email: string, password: string, role: Role) => {
-    const passwordHash = await hashPassword(password);
-    return prisma.user.create({
-        data: {
-            email,
-            passwordHash,
-            role,
-        }
-    });
 }
 
 const generateToken = (guid: string, email: string, role: Role) => {
@@ -36,7 +26,7 @@ const generateToken = (guid: string, email: string, role: Role) => {
 }
 
 export const registerDoctorService = async (data: RegisterDoctorRequestDto): Promise<RegisterDoctorResponseDto> => {
-    const { user, doctor, specialization } = await prisma.$transaction(async () => {
+    const { user, doctor, specialization } = await prisma.$transaction(async (tx) => {
         if (!await isEmailUnique(data.email)) {
             throw new Error("User already exists");
         }
@@ -47,13 +37,16 @@ export const registerDoctorService = async (data: RegisterDoctorRequestDto): Pro
             create: { name: data.specialization }
         });
 
-        const user = await createUserAccount(
-            data.email,
-            data.password,
-            Role.DOCTOR
-        );
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        const user = await tx.user.create({
+            data: {
+                email: data.email,
+                passwordHash: hashedPassword,
+                role: Role.DOCTOR,
+            },
+        });
 
-        const doctor = await prisma.doctor.create({
+        const doctor = await tx.doctor.create({
             data: {
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -91,23 +84,27 @@ export const registerDoctorService = async (data: RegisterDoctorRequestDto): Pro
 }
 
 export const registerPatientService = async (data: RegisterPatientRequestDto): Promise<RegisterPatientResponseDto> => {
-    const { user, patient } = await prisma.$transaction(async () => {
+    const { user, patient } = await prisma.$transaction(async (tx) => {
         if (!await isEmailUnique(data.email)) {
             throw new Error("User already exists");
         }
 
-        const user = await createUserAccount(
-            data.email,
-            data.password,
-            Role.PATIENT
-        );
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        const user = await tx.user.create({
+            data: {
+                email: data.email,
+                passwordHash: hashedPassword,
+                role: Role.PATIENT,
+            },
+        });
 
-        const patient = await prisma.patient.create({
+
+        const patient = await tx.patient.create({
             data: {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 phoneNumber: data.phoneNumber,
-                dateOfBirth: data.dateOfBirth,
+                dateOfBirth: new Date(data.dateOfBirth).toISOString(),
                 street: data.street,
                 city: data.city,
                 postalCode: data.postalCode,
