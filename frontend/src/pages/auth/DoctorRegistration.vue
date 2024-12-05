@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { useRegistration } from '../../composables/useRegistration.ts';
-import PasswordInput from '../../components/PasswordInput.vue';
-import RegistrationForm from "../../components/RegistrationForm.vue";
+import PasswordInput from '../../components/forms/PasswordInput.vue';
+import RegistrationForm from "../../components/forms/RegistrationForm.vue";
 
 const defaultFormState = {
     email: '',

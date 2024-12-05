@@ -22,22 +22,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+    import { computed } from 'vue';
+    import { useStore } from 'vuex';
 
-import { key } from '../store';
-import router from "../router";
+    import { key } from '../store';
+    import router from "../router";
 
-const store = useStore(key);
+    const store = useStore(key);
 
-const isAuthenticated = computed(() => store.state.auth.isAuthenticated);
-const isAdmin = computed(() => store.getters.isAdmin);
-const isDoctor = computed(() => store.getters.isDoctor);
+    const isAuthenticated = computed(() => store.state.auth.isAuthenticated);
+    const isAdmin = computed(() => store.getters.isAdmin);
+    const isDoctor = computed(() => store.getters.isDoctor);
 
-const handleLogout = async () => {
-    await store.dispatch('logout');
-    await router.push('/home');
-};
+    const handleLogout = async () => {
+        await store.dispatch('logout');
+        await router.push('/home');
+    };
 </script>
 
 <style scoped>

@@ -5,3 +5,9 @@ export interface User {
     email: string;
     role: Role;
 }
+
+export interface Doctor {
+    guid: string;
+    firstName: string;
+    lastName: string;
+}

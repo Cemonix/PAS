@@ -10,7 +10,13 @@
         <input type="text" v-model="formData.firstName" placeholder="First name" required />
         <input type="text" v-model="formData.lastName" placeholder="Last name" required />
         <input type="text" v-model="formData.phoneNumber" placeholder="Phone number" required />
-        <input type="text" v-model="formData.dateOfBirth" placeholder="Date of birth" required />
+        <input
+            type="text"
+            onfocus="(this.type='date')"
+            onblur="(this.type='text')"
+            placeholder="Date of birth"
+            v-model="formData.dateOfBirth"
+            required />
         <input type="text" v-model="formData.city" placeholder="City" required />
         <input type="text" v-model="formData.street" placeholder="Street" required />
         <input type="text" v-model="formData.postalCode" placeholder="Postal code" required />
@@ -19,8 +25,8 @@
 
 <script setup lang="ts">
     import {useRegistration} from "../../composables/useRegistration.ts";
-    import PasswordInput from "../../components/PasswordInput.vue";
-    import RegistrationForm from "../../components/RegistrationForm.vue";
+    import PasswordInput from "../../components/forms/PasswordInput.vue";
+    import RegistrationForm from "../../components/forms/RegistrationForm.vue";
 
     const defaultFormState = {
         email: '',
